@@ -168,6 +168,11 @@ class EonClient:
 
         return list_members(self, party_id or self.party_id)
 
+    def get_friends(self):
+        from eon_bot.friends.search import get_friends
+
+        return get_friends(self)
+
     def kick_member(self, target_account_id: str, party_id: str | None = None):
         from eon_bot.party.kick import kick_member
 
