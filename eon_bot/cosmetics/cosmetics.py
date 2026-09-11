@@ -111,6 +111,7 @@ def set_pickaxe(member_meta: PartyMemberMeta, cosmetic_id: str):
     _patch_loadout(member_meta)
     
 def set_level(member_meta: PartyMemberMeta, amount: int):
+    member_meta.season_level = amount
     member_meta.patch({"Default:AthenaBannerInfo_j": json.dumps({"AthenaBannerInfo": {"bannerIconId": "", "bannerColorId": "", "seasonLevel": str(amount)}})})
 
 

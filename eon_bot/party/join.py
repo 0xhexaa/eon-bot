@@ -85,7 +85,7 @@ def join_party(client, party_id: str, leave_party_id: str | None = None):
     resp.raise_for_status()
     result = resp.json()
 
-    meta = PartyMemberMeta(client, party_id)
+    meta = PartyMemberMeta(client, party_id, previous=getattr(client, "party_meta", None))
     meta.mark_voice_unmuted()
     meta.become_visible()
     client.party_meta = meta

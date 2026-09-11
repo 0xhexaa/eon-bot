@@ -1,4 +1,5 @@
 import json
+from copy import deepcopy
 
 import requests
 
@@ -6,12 +7,13 @@ from eon_bot.auth.client import BASE
 
 
 class PartyMemberMeta:
-    def __init__(self, client, party_id: str):
+    def __init__(self, client, party_id: str, previous=None):
         self.client = client
         self.party_id = party_id
         self.revision = 0
-        self.loadout = {}
-        self.variants = {}
+        self.loadout = deepcopy(previous.loadout) if previous else {}
+        self.variants = deepcopy(previous.variants) if previous else {}
+        self.season_level = previous.season_level if previous else 1
 
     @property
     def _url(self):
@@ -37,17 +39,18 @@ class PartyMemberMeta:
         pickaxe_def: str = "/Game/Athena/Items/Cosmetics/Pickaxes/DefaultPickaxe.DefaultPickaxe",
         contrail_def: str = "/Game/Athena/Items/Cosmetics/Contrails/DefaultContrail.DefaultContrail",
     ):
-        self.loadout = {
-            "characterDef": character_def,
-            "characterEKey": "",
-            "backpackDef": backpack_def,
-            "backpackEKey": "",
-            "pickaxeDef": pickaxe_def,
-            "pickaxeEKey": "",
-            "contrailDef": contrail_def,
-            "contrailEKey": "",
-            "scratchpad": [],
-        }
+        if not self.loadout:
+            self.loadout = {
+                "characterDef": character_def,
+                "characterEKey": "",
+                "backpackDef": backpack_def,
+                "backpackEKey": "",
+                "pickaxeDef": pickaxe_def,
+                "pickaxeEKey": "",
+                "contrailDef": contrail_def,
+                "contrailEKey": "",
+                "scratchpad": [],
+            }
         platform_data = {
             "PlatformData": {
                 "platform": {
@@ -113,7 +116,13 @@ class PartyMemberMeta:
             ),
             "Default:ArbitraryCustomDataStore_j": json.dumps({"ArbitraryCustomDataStore": []}),
             "Default:AthenaBannerInfo_j": json.dumps(
-                {"AthenaBannerInfo": {"bannerIconId": "", "bannerColorId": "", "seasonLevel": 1}}
+                {
+                    "AthenaBannerInfo": {
+                        "bannerIconId": "",
+                        "bannerColorId": "",
+                        "seasonLevel": self.season_level,
+                    }
+                }
             ),
             "Default:BattlePassInfo_j": json.dumps(
                 {
